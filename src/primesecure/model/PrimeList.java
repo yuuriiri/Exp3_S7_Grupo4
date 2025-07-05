@@ -8,6 +8,7 @@ public class PrimeList extends ArrayList<Integer> {
     public synchronized boolean add(Integer n) {
         if (!isPrime(n)) {
             System.out.println(n + "No es primo.");
+            return false;
         } 
         return super.add(n);
     }

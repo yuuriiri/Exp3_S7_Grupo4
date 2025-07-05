@@ -1,55 +1,56 @@
 package primesecure.main;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 import primesecure.model.PrimeList;
+import primesecure.threads.ProcesarNumero;
 
 public class Main {
 
-    private final Scanner scanner = new Scanner(System.in);
-
-    static String[] opcionesMenu = {
-        "------------------------",
-        "1) App",
-        "2) Mostrar numeros primos",
-        "3) Salir",
-        "------------------------",};
-
     public static void main(String[] args) {
         Main app = new Main();
-        app.ejecutarMenu();
+        app.programa();
     }
 
-    public void ejecutarMenu() {
-        int opcionMenu = -1;
-        System.out.println("..::: ¡Bienvenido a PrimeSecure! :::..");
-        do {
-            mostrarMenu();
-            if (scanner.hasNextInt()) {
-                opcionMenu = scanner.nextInt();
-                scanner.nextLine();
-                switch (opcionMenu) {
-                    case 1 ->
-                        System.out.println("");
-                    case 2 ->
-                        System.out.println("====== MOSTRAR NUMEROS PRIMOS ======");
-                    case 3 ->
-                        System.out.println("Saliendo del sistema...");
-                    default ->
-                        System.out.println("Opción no válida. Intente de nuevo.");
-                }
-            } else {
-                System.out.println("Entrada no válida. Ingrese un número.");
-                scanner.nextLine(); 
+    private final Scanner sc = new Scanner(System.in);
+    private final PrimeList lista = new PrimeList();
+    private final ArrayList<Thread> hilos = new ArrayList<>();
+
+    public void programa() {
+
+        System.out.println("Ingrese un número (0 para salir y imprimir lista de numeros primos): ");
+
+        while (true) {
+            System.out.print("Numero: ");
+            int opcion = sc.nextInt();
+
+            if (opcion == 0) {
+                break;
             }
-        } while (opcionMenu != 3);
-    }
 
-    public void mostrarMenu() {
-        System.out.println("\n====== MENU PRINCIPAL ======");
-        for (String opcionesMenu1 : opcionesMenu) {
-            System.out.println(opcionesMenu1);
+            ProcesarNumero hilo = new ProcesarNumero(opcion, lista);
+            hilo.start(); // Inicia el thread 
+            hilos.add(hilo);
         }
-        System.out.println("Seleccione una opción: ");
+
+        System.out.println("Esperando..");
+
+        for (Thread hilo : hilos) {
+            try {
+                hilo.join(); // Espera real
+            } catch (InterruptedException e) {
+                System.out.println("Error esperando un hilo.");
+            }
+        }
+
+        System.out.println("=== LISTA NUMEROS PRIMOS ===");
+
+        if (lista.isEmpty()) {
+            System.out.println("No se encontraron primos.");
+        } else {
+            for (int primos : lista) {
+                System.out.println("> " + primos);
+            }
+        }
     }
 }
-
