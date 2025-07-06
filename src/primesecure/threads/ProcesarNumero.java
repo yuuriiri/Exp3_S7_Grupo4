@@ -15,13 +15,17 @@ public class ProcesarNumero extends Thread {
     @Override
     public void run() {
 
-        if (PrimeList.isPrime(numero)) {
-            synchronized (listaNumeros) {
-                listaNumeros.add(numero);
+        try {
+            if (PrimeList.isPrime(numero)) {
+                synchronized (listaNumeros) {
+                    listaNumeros.add(numero);
+                }
+                System.out.println(numero + " es primo.");
+            } else {
+                throw new IllegalArgumentException(numero + " no es un número primo.");
             }
-            System.out.println(numero + " es primo.");
-        } else {
-            System.out.println(numero + " no es primo.");
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
         }
     }
 
